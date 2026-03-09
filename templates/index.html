@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 AgriVision AI</h1>
+        <p>Smart Leaf Disease Diagnosis</p>
+        
+        <form id="upload-form">
+            <label class="upload-section">
+                <span id="file-label">📁 Click to choose leaf image</span>
+                <input type="file" id="imageInput" accept="image/*" required>
+            </label>
+            <div id="preview-container"></div>
+            <button type="submit" id="submit-btn">Analyze Health</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const fileLabel = document.getElementById('file-label');
+        const previewContainer = document.getElementById('preview-container');
+
+        // Image preview logic
+        imageInput.onchange = () => {
+            const file = imageInput.files[0];
+            if (file) {
+                fileLabel.innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewContainer.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:10px; margin-top:10px;">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('upload-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const resultDiv = document.getElementById('result');
+            
+            const formData = new FormData();
+            formData.append('file', imageInput.files[0]);
+
+            btn.disabled = true;
+            btn.innerText = "Analyzing...";
+            resultDiv.innerHTML = "";
+
+            try {
+                const response = await fetch('/predict', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="result-card">
+                        <h2>Result: ${data.disease}</h2>
+                        <p>Confidence: <strong>${data.confidence}</strong></p>
+                    </div>
+                `;
+            } catch (err) {
+                resultDiv.innerHTML = "<p style='color:red;'>Error connecting to server.</p>";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Analyze Health";
+            }
+        };
+    </script>
+</body>
+</html>
