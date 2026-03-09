@@ -87,5 +87,4 @@ The model classifies diseases across various species including:
 * **Potato, Grape, Peach, Pepper, and more.**
 
 ---
-# Finally link my app :
-                      https://huggingface.co/spaces/abdullah-ml/plant_diseases_classification0
+# Finally link my app : https://huggingface.co/spaces/abdullah-ml/plant_diseases_classification0
